@@ -7,8 +7,8 @@ class Maze():
     
     def __init__(self,x1,y1,num_rows,num_cols,
                 cell_size_x,cell_size_y,win=None,
-                 random_seed=57):                         # strange incomplete maze with random seed = 2135
-        self.x1 = x1
+                 random_seed=3846):                         # strange incomplete maze with random seed = 2135
+        self.x1 = x1                                        # before changing to offsets = self.directions.copy()
         self.y1 = y1
         self.num_rows = num_rows
         self.num_cols = num_cols
@@ -56,8 +56,9 @@ class Maze():
         #sleep(.05)
         this_cell = self.cells[col][row]
         this_cell.visited = True
-        random.shuffle(self.directions)
-        for offset in self.directions:
+        offsets = self.directions.copy()
+        random.shuffle(offsets)
+        for offset in offsets:
             next_col = col + offset[0]
             next_row = row + offset[1]
             if not self.in_bounds(next_col, next_row):
@@ -96,7 +97,7 @@ class Maze():
         return self.solve_r(col,row)
     
     def solve_r(self,col,row):
-        sleep(.05)
+        #sleep(.05)
         this_cell = self.cells[col][row]
         this_cell.visited = True
         offsets = self.directions.copy()
@@ -107,10 +108,6 @@ class Maze():
             if not self.in_bounds(next_col, next_row):
                 continue
             next_cell = self.cells[next_col][next_row]
-            if next_col == self.num_cols-1 and next_row == self.num_rows-1:
-                this_cell.draw_move(next_cell, undo=False)
-                self.win.redraw()                
-                return True
             if next_cell.visited:
                 continue
 
@@ -125,7 +122,8 @@ class Maze():
 
             this_cell.draw_move(next_cell, undo=False)
             self.win.redraw()
-            #print(next_col,next_row)
+            if next_col == self.num_cols-1 and next_row == self.num_rows-1:
+                return True
             if self.solve_r(next_col,next_row):
                 return True
             this_cell.draw_move(next_cell, undo=True)
